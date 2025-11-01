@@ -1,0 +1,15 @@
+__pycache__/
+.pytest_cache/
+.venv/
+.env
+.dvc/
+.dvcignore
+.git/
+data/
+models/
+*.pyc
+*.pkl
+*.log
+/.vscode/
+/*.tar
+/*.egg-info
