@@ -97,5 +97,3 @@ jobs:
         images: |
           ${{ secrets.ACR_NAME }}.azurecr.io/food-waste-predictor:${{ github.sha }}
         # This command substitutes the image tag in deployment.yaml
-        substitutions: |
-          imageTag=${{ github.sha }}

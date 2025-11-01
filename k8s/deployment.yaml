@@ -15,6 +15,5 @@ spec:
     spec:
       containers:
       - name: app
-        image: $(imageTag) # This placeholder is replaced by GitHub Actions
-        ports:
+        image: ${{ secrets.ACR_NAME }}.azurecr.io/food-waste-predictor
         - containerPort: 8080
