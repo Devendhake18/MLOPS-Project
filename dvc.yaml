@@ -1,4 +1,17 @@
 stages:
+  setup_dvc_remote:
+    # This stage configures the DVC Azure remote at runtime using the
+    # AZURE_STORAGE_CONNECTION_STRING environment variable (provided by
+    # GitHub Actions secrets). It runs before other stages so CI can
+    # authenticate and pull/push cache. When the env var is not set,
+    # the command is a no-op.
+    cmd: >
+      bash -lc "if [ -n \"$AZURE_STORAGE_CONNECTION_STRING\" ]; then \
+        dvc remote modify --local myremote connection_string \"$AZURE_STORAGE_CONNECTION_STRING\"; \
+      else \
+        echo 'AZURE_STORAGE_CONNECTION_STRING not set, skipping remote config'; \
+      fi"
+
   data_ingestion:
     cmd: python src/data_ingestion.py
     deps:
