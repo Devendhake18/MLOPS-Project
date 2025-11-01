@@ -95,5 +95,5 @@ jobs:
           k8s/deployment.yaml
           k8s/service.yaml
         images: |
-          ${{ secrets.ACR_NAME }}.azurecr.io/food-waste-predictor:${{ github.sha }}
+          foodwasteacr.azurecr.io/food-waste-predictor:${{ github.sha }}
         # This command substitutes the image tag in deployment.yaml

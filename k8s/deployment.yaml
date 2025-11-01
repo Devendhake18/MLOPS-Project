@@ -15,6 +15,6 @@ spec:
     spec:
       containers:
       - name: app
-        image: ${{ secrets.ACR_NAME }}.azurecr.io/food-waste-predictor
+        image: foodwasteacr.azurecr.io/food-waste-predictor
         ports:
         - containerPort: 8080
