@@ -30,17 +30,18 @@ jobs:
 
     - name: Setup DVC
       uses: iterative/setup-dvc@v1
-    
-    # --- DVC PULL STEP ---
-    # You must configure DVC remote storage (e.g., Azure Blob)
-    # and add credentials as GitHub Secrets (AZURE_STORAGE_CONNECTION_STRING)
-    #
-    # - name: Pull DVC Data
-    #   env:
-    #     AZURE_STORAGE_CONNECTION_STRING: ${{ secrets.AZURE_STORAGE_CONNECTION_STRING }}
-    #   run: |
-    #     dvc remote modify myremote connection_string $AZURE_STORAGE_CONNECTION_STRING
-    #     dvc pull -r myremote
+
+    - name: Install DVC Azure extras
+      run: python -m pip install --upgrade pip && pip install "dvc[azure]"
+
+    - name: Configure DVC remote and pull data
+      env:
+        AZURE_STORAGE_CONNECTION_STRING: ${{ secrets.AZURE_STORAGE_CONNECTION_STRING }}
+      run: |
+        # Write the connection string into local config so DVC can authenticate
+        dvc remote modify --local myremote connection_string "$AZURE_STORAGE_CONNECTION_STRING" || true
+        # Pull required files from the configured Azure remote
+        dvc pull --verbose
     
     - name: Reproduce DVC pipeline
       run: |
