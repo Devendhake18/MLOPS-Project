@@ -6,10 +6,12 @@ __pycache__/
 .dvcignore
 .git/
 data/
-models/
+# include models in the image (models are pulled from DVC during CI build)
+# models/
 *.pyc
-*.pkl
-*.log
+# keep .pkl files (model artifacts) so they are included in the Docker image
+# *.pkl
+.log
 /.vscode/
 /*.tar
 /*.egg-info
