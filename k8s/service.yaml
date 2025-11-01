@@ -1,0 +1,12 @@
+# k8s/service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: food-waste-predictor-service
+spec:
+  type: LoadBalancer # Exposes the service externally
+  ports:
+  - port: 80       # Public port
+    targetPort: 8080 # Container port
+  selector:
+    app: food-waste-predictor # Must match the deployment's labels

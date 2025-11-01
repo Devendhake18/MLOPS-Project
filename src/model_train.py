@@ -1,0 +1,80 @@
+import pandas as pd
+import os
+import joblib
+import logging
+import yaml
+from sklearn.linear_model import LinearRegression
+from sklearn.ensemble import RandomForestRegressor
+from xgboost import XGBRegressor
+from sklearn.preprocessing import LabelEncoder
+
+# Logging
+log_dir = "logs"
+os.makedirs(log_dir, exist_ok=True)
+logger = logging.getLogger("model_training")
+logger.setLevel(logging.DEBUG)
+ch = logging.StreamHandler()
+fh = logging.FileHandler(os.path.join(log_dir, "model_training.log"))
+formatter = logging.Formatter("%(asctime)s - %(levelname)s - %(message)s")
+ch.setFormatter(formatter)
+fh.setFormatter(formatter)
+logger.addHandler(ch)
+logger.addHandler(fh)
+
+def load_params():
+    with open("params.yaml") as f:
+        return yaml.safe_load(f)
+
+def main():
+    params = load_params()
+    train_in = params["model_train"]["input_train_path"]
+    models_config = params["model_train"]["models"]
+    random_state = params["base"]["random_state"]
+    models_output_dir = params["model_train"]["models_output_dir"]
+
+    train_df = pd.read_csv(train_in)
+
+    # Separate target
+    y = train_df["waste"]
+    X = train_df.drop(columns=["waste"])
+
+    # Encode categorical features
+    categorical_cols = X.select_dtypes(include="object").columns
+    for col in categorical_cols:
+        le = LabelEncoder()
+        X[col] = le.fit_transform(X[col])
+
+    os.makedirs(models_output_dir, exist_ok=True)
+
+    for model_name, cfg in models_config.items():
+        logger.info(f"Training {model_name}")
+        if model_name == "linear_regression":
+            model = LinearRegression()
+        elif model_name == "random_forest":
+            model = RandomForestRegressor(
+                n_estimators=cfg["n_estimators"],
+                max_depth=cfg["max_depth"],
+                min_samples_split=cfg["min_samples_split"],
+                min_samples_leaf=cfg["min_samples_leaf"],
+                random_state=random_state
+            )
+        elif model_name == "xgboost":
+            model = XGBRegressor(
+                n_estimators=cfg["n_estimators"],
+                learning_rate=cfg["learning_rate"],
+                max_depth=cfg["max_depth"],
+                subsample=cfg["subsample"],
+                colsample_bytree=cfg["colsample_bytree"],
+                random_state=random_state,
+                objective="reg:squarederror",
+                verbosity=0
+            )
+        else:
+            continue
+
+        model.fit(X, y)
+        joblib.dump(model, cfg["model_path"])
+        logger.info(f"Saved {model_name} to {cfg['model_path']}")
+
+if __name__ == "__main__":
+    main()
