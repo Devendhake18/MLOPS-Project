@@ -65,6 +65,16 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v3
 
+    - name: Install DVC (Azure support)
+      run: python -m pip install --upgrade pip && pip install "dvc[azure]"
+
+    - name: Pull DVC data (models) for image build
+      env:
+        AZURE_STORAGE_CONNECTION_STRING: ${{ secrets.AZURE_STORAGE_CONNECTION_STRING }}
+      run: |
+        dvc remote modify --local myremote connection_string "$AZURE_STORAGE_CONNECTION_STRING" || true
+        dvc pull --verbose
+
     # --- ADD THESE STEPS ---
     
     - name: Set up Python 3.9
