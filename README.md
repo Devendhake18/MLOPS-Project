@@ -59,3 +59,10 @@ source venv/bin/activate  # On Windows: venv\Scripts\activate
 
 # Install required dependencies
 pip install -r requirements.txt
+```
+
+| Name | PRN Number |
+|------|-------------|
+| Deven Dhake | 22070126062 | 
+| Manan Tandel | 22070126062 | 
+| Madhusudan Hasbe | 22070126062| 
